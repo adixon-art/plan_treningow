@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Treningi</title>
+    
+    <style>
+        :root {
+            --bg: #f4f7f6;
+            --bieg: #ff4757;
+            --marsz: #2ed573;
+            --silowe: #1e90ff;
+            --basen: #3742fa;
+        }
+        body { 
+            font-family: -apple-system, system-ui, sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            padding: env(safe-area-inset-top) 15px 15px 15px;
+            user-select: none;
+        }
+        h2 { text-align: center; color: #2f3542; margin-top: 10px; }
+        
+        #calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .day {
+            aspect-ratio: 1 / 1.3;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            font-size: 11px;
+            padding: 2px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        .day-num { font-weight: bold; margin-bottom: 2px; color: #777; }
+        .training-dot {
+            height: 4px;
+            width: 100%;
+            margin: 1px 0;
+            border-radius: 2px;
+        }
+
+        .form-box {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        select, input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 16px; /* Zapobiega zoomowaniu na iPhone */
+        }
+        button {
+            background: #2f3542;
+            color: white;
+            font-weight: bold;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>📅 Moje Treningi</h2>
+    <div id="calendar"></div>
+
+    <div class="form-box">
+        <input type="number" id="dayInput" placeholder="Dzień (1-31)">
+        <select id="typeInput">
+            <option value="bieg">🔴 Bieg</option>
+            <option value="marsz">🟢 Marsz</option>
+            <option value="silowe">🔵 Siłowe</option>
+            <option value="basen">🔵 Basen</option>
+        </select>
+        <button onclick="addTraining()">DODAJ TRENING</button>
+        <button onclick="clearData()" style="background: #ccc; color: #333; margin-top: 20px;">Wyczyść wszystko</button>
+    </div>
+
+    <script>
+        let trainings = JSON.parse(localStorage.getItem('myTrainings')) || [];
+
+        function renderCalendar() {
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+            const daysInMonth = 31;
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'day';
+                dayDiv.innerHTML = `<div class="day-num">${i}</div>`;
+                
+                const todaysTrainings = trainings.filter(t => t.day == i);
+                todaysTrainings.forEach(t => {
+                    const dot = document.createElement('div');
+                    dot.className = 'training-dot';
+                    dot.style.backgroundColor = `var(--${t.type})`;
+                    dayDiv.appendChild(dot);
+                });
+                calendar.appendChild(dayDiv);
+            }
+        }
+
+        function addTraining() {
+            const day = document.getElementById('dayInput').value;
+            const type = document.getElementById('typeInput').value;
+            if (!day || day < 1 || day > 31) return alert("Podaj dzień!");
+            
+            trainings.push({ day, type });
+            localStorage.setItem('myTrainings', JSON.stringify(trainings));
+            renderCalendar();
+        }
+
+        function clearData() {
+            if(confirm("Usunąć wszystkie wpisy?")) {
+                localStorage.removeItem('myTrainings');
+                trainings = [];
+                renderCalendar();
+            }
+        }
+
+        renderCalendar();
+    </script>
+</body>
+</html>
