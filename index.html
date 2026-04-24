@@ -524,6 +524,11 @@
             <input type="number" id="walkDist" min="0" step="0.1" placeholder="0.0">
             <span class="field-unit">km</span>
           </div>
+          <div class="field-row">
+            <span class="field-label">Obciążenie</span>
+            <input type="number" id="walkWeight" min="0" step="0.5" placeholder="0">
+            <span class="field-unit">kg</span>
+          </div>
         </div>
         <div id="strengthFields" class="fields-group" style="display:none">
           <div class="strength-grid">
@@ -715,6 +720,7 @@ function formatDetails(a) {
   const lines = [];
   if (a.type === 'run' || a.type === 'walk') {
     if (a.dist) lines.push(`Dystans: <b>${a.dist} km</b>`);
+    if (a.type === 'walk' && a.weight) lines.push(`Obciążenie: <b>${a.weight} kg</b>`);
   } else if (a.type === 'strength') {
     const exs = [
       { name: 'Podciąganie', s: a.pullSeries, r: a.pullReps },
@@ -784,7 +790,7 @@ function openFormModal(editId) {
 function prefillForm(a) {
   selectType(a.type);
   if (a.type === 'run') { setVal('runDist', a.dist); }
-  else if (a.type === 'walk') { setVal('walkDist', a.dist); }
+  if (selectedType === 'walk') { setVal('walkDist', a.dist); setVal('walkWeight', a.weight); }
   else if (a.type === 'strength') {
     setVal('pullSeries', a.pullSeries); setVal('pullReps', a.pullReps);
     setVal('sqSeries', a.sqSeries); setVal('sqReps', a.sqReps);
@@ -811,7 +817,7 @@ function selectType(type) {
 }
 
 function clearInputs() {
-  ['runDist','walkDist','pullSeries','pullReps','sqSeries','sqReps',
+  ['runDist','walkDist','walkWeight','pullSeries','pullReps','sqSeries','sqReps',
    'pushSeries','pushReps','absSeries','absReps','swimLaps','swimTime','mixDist','mixTime']
    .forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
 }
@@ -830,7 +836,7 @@ function saveActivity() {
   let act = { type: selectedType, done: false, id: editingId || genId() };
 
   if (selectedType === 'run')  { act.dist = n('runDist'); }
-  if (selectedType === 'walk') { act.dist = n('walkDist'); }
+  if (selectedType === 'walk') { act.dist = n('walkDist'); act.weight = n('walkWeight'); }
   if (selectedType === 'strength') {
     act.pullSeries = ni('pullSeries'); act.pullReps = ni('pullReps');
     act.sqSeries   = ni('sqSeries');   act.sqReps   = ni('sqReps');
