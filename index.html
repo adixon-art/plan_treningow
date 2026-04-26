@@ -42,15 +42,17 @@
   .cal-grid { padding: 16px; }
   .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 6px; }
   .weekday { text-align: center; font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; color: var(--text-dim); padding: 4px 0; text-transform: uppercase; }
-  .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-  .day { min-height: 72px; border-radius: 8px; background: var(--bg3); border: 1px solid var(--border); padding: 6px 5px 4px; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative; display: flex; flex-direction: column; gap: 2px; }
+  .days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  .day { min-height: 72px; border-radius: 8px; background: var(--bg3); border: 1px solid var(--border); padding: 6px 5px 4px; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative; display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow: hidden; width: 100%; }
   .day:hover { border-color: var(--accent2); background: var(--bg4); }
   .day.empty { background: transparent; border-color: transparent; cursor: default; }
   .day.today .day-num { color: var(--accent2); font-weight: 700; }
   .day.today { border-color: var(--accent); }
   .day-num { font-size: 0.82rem; font-weight: 600; color: var(--text-dim); line-height: 1; }
-  .activity-dot { border-radius: 4px; padding: 2px 4px; font-size: 0.6rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 3px; }
+  .activity-dot { border-radius: 4px; padding: 2px 3px; font-size: 0.55rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 2px; min-width: 0; max-width: 100%; }
   .activity-dot.done-act { opacity: 0.55; }
+  .dot-label { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  @media (max-width: 400px) { .dot-label { display: none; } }
 
   .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
   .overlay.open { display: flex; }
@@ -317,7 +319,7 @@ function renderCalendar() {
       const dot = document.createElement('div');
       dot.className = 'activity-dot' + (a.done ? ' done-act' : '');
       dot.style.background = TYPE_CONFIG[a.type].color;
-      dot.innerHTML = `<span>${TYPE_CONFIG[a.type].icon}</span><span>${TYPE_CONFIG[a.type].label}</span>`;
+      dot.innerHTML = `<span>${TYPE_CONFIG[a.type].icon}</span><span class="dot-label">${TYPE_CONFIG[a.type].label}</span>`;
       if (a.done) dot.innerHTML += `<span style="font-size:0.65rem">✓</span>`;
       cell.appendChild(dot);
     });
